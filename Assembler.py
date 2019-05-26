@@ -19,7 +19,6 @@ def abrirArquivo():
     ls = x.strip('][').replace('\'', "").replace(" ", "").split(',')
     return {'k':k,'d':d,'sequencia':ls}
 
-
 def prefixo(i):
     s1 , s2 = i['rotulo'].split('|')
     s1 = s1[0:-1]
@@ -31,7 +30,6 @@ def sufixo(i):
     s1 = s1[1:]
     s2 = s2[1:]
     return (s1, s2)
-
 
 def geraAdjLista(composicao):
     grafo = []
@@ -72,16 +70,26 @@ def encontraInicio(grafo):
     return inicio
 
 def geraCaminho(grafo, inicio):
-    pass
+    if inicio == -1:
+        inicio = grafo[inicio]['adjlist'].pop()
+    if grafo[inicio]['adjlist'] == []:
+        return [inicio]
+    return [inicio]+geraCaminho(grafo, grafo[inicio]['adjlist'].pop())
+
+
 composicao = abrirArquivo()
 grafo = geraAdjLista(composicao)
 inicio = encontraInicio(grafo)
-gerasequencia(inicio,"")
+print(grafo)
+#gerasequencia(inicio,"")
+seq = geraCaminho(grafo, inicio)
+print(seq)
+
 
 
 
 """
-print(grafo)
+
 for g in grafo:
     print(g['ant'])
 """
