@@ -34,10 +34,12 @@ def sufixo(i):
     return (s1, s2)
 
 def geraAdjLista(composicao):
+    rotulo = {}
     grafo = {}
     saida = {}
     entrada = {}
     for x in composicao['sequencia']:
+        rotulo[prefixo(x)] = x
         grafo[prefixo(x)] = []
         saida[prefixo(x)] = 0
         saida[sufixo(x)] = 0
@@ -47,7 +49,7 @@ def geraAdjLista(composicao):
         grafo[prefixo(x)].append(sufixo(x))
         saida[prefixo(x)] += 1
         entrada[sufixo(x)] += 1
-    return [grafo,saida,entrada]
+    return [grafo,saida,entrada, rotulo]
 
 def encontraInicio(entrada, saida):
     mim = 0
@@ -77,24 +79,24 @@ def acha_caminho(grafo, entrada, saida, chave):
                 chave = viz
     return caminho[::-1]
 
-def remonta(k, caminho):
+def remonta(d, caminho, rotulo):
     sequencia = ""
     for i in caminho:
         if sequencia == "":
-            sequencia += i[0][0] 
+            sequencia += rotulo[i].split("")
         else:
             sequencia += i[0][0]
     
-    return sequencia + caminho[-1][0][1:] + caminho[-k][1][:k]  + caminho[-1][1]
+    return sequencia + caminho[-1][0][1:] + caminho[-k][0][:k] + caminho[-k][1][:k] + caminho[-1][1]
 
 
 composicao = abrirArquivo()
-grafo, saida, entrada = geraAdjLista(composicao)
+grafo, saida, entrada, rotulo = geraAdjLista(composicao)
 chave_inicio = encontraInicio(entrada, saida)
 #print(chave_inicio)
 cami = acha_caminho(grafo, entrada, saida, chave_inicio)
 print(cami)
-sequencia = remonta(composicao['k'],cami)
+sequencia = remonta(composicao['d'],cami, rotulo)
 print(sequencia)
 #for g in grafo:
 #    print(g['adj'])
