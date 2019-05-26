@@ -9,7 +9,7 @@ texto.	Supondo	que	k	=	50	e	d	=	20,	o	arquivo	de	saída	do	programa	será	k50d20
 entrada	deverá	ter	o	seguinte	formato:
 
 INPUT - arquivo	fasta	com	o	seguinte	layout:
->k=999d=999
+\>k=999d=999
 Sequencia de Nucleotideos
 OUTPUT	– arquivo	texto com	os	kdmers	em	ordem	lexicográfica:
 [ATTG|TTGG,	GCTG|GGTG,	...]
