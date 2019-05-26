@@ -76,14 +76,30 @@ def geraCaminho(grafo, inicio):
         return [inicio]
     return [inicio]+geraCaminho(grafo, grafo[inicio]['adjlist'].pop())
 
+def sequencia(s, d):
+    tam = len(s)
+    se = ""
+    for i in range(tam):
+        ini = grafo[s[i]]['rotulo'].split('|')[0]
+        fin = grafo[s[i]]['rotulo'].split('|')[1]
+        if se == "":
+            se += ini
+        else:
+            se += ini[-1]
+        if i==tam-1:
+            se += grafo[s[i-d]]['rotulo'].split('|')[1][:d]
+            se += fin
+    return se
 
 composicao = abrirArquivo()
 grafo = geraAdjLista(composicao)
 inicio = encontraInicio(grafo)
-print(grafo)
-#gerasequencia(inicio,"")
+#print(grafo)
+gerasequencia(inicio,"")
 seq = geraCaminho(grafo, inicio)
 print(seq)
+se = sequencia(seq, composicao['d'])
+print(se)
 
 
 
