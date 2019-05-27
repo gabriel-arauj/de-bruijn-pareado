@@ -1,5 +1,4 @@
 import sys
-from copy import deepcopy
 
 
 # Abrindo arquivo kdmer
@@ -39,16 +38,20 @@ def geraAdjLista(composicao):
     saida = {}
     entrada = {}
     for x in composicao['sequencia']:
-        rotulo[prefixo(x)] = x
-        grafo[prefixo(x)] = []
-        saida[prefixo(x)] = 0
-        saida[sufixo(x)] = 0
-        entrada[sufixo(x)] = 0
-        entrada[prefixo(x)] = 0
+        pre = prefixo(x)
+        suf = sufixo(x)
+        rotulo[pre] = x
+        grafo[pre] = []
+        saida[pre] = 0
+        saida[suf] = 0
+        entrada[suf] = 0
+        entrada[pre] = 0
     for x in composicao['sequencia']:
-        grafo[prefixo(x)].append(sufixo(x))
-        saida[prefixo(x)] += 1
-        entrada[sufixo(x)] += 1
+        pre = prefixo(x)
+        suf = sufixo(x)
+        grafo[pre].append(suf)
+        saida[pre] += 1
+        entrada[suf] += 1
     return [grafo,saida,entrada, rotulo]
 
 def encontraInicio(entrada, saida):
@@ -79,45 +82,29 @@ def acha_caminho(grafo, entrada, saida, chave):
                 chave = viz
     return caminho[::-1]
 
-def remonta(d, caminho, rotulo):
+def remonta( d, k, caminho, rotulo):
     sequencia = ""
-    for i in caminho:
+    for i in caminho[:-1]:
+        ini = i[0]
         if sequencia == "":
-            sequencia += rotulo[i].split("")
+            sequencia += ini
         else:
-            sequencia += i[0][0]
-    
-    return sequencia + caminho[-1][0][1:] + caminho[-k][0][:k] + caminho[-k][1][:k] + caminho[-1][1]
+            sequencia += ini[-1]
+    tam = len(caminho)
+    for i in range(d + 1):
+        sequencia += caminho[tam-d + i -4][1][1]
+        #print( caminho[tam-d + i -4][1][1])
+    return sequencia + caminho[-2][1][0] + caminho[-1][1]
 
 
 composicao = abrirArquivo()
 grafo, saida, entrada, rotulo = geraAdjLista(composicao)
 chave_inicio = encontraInicio(entrada, saida)
-#print(chave_inicio)
 cami = acha_caminho(grafo, entrada, saida, chave_inicio)
-print(cami)
-sequencia = remonta(composicao['d'],cami, rotulo)
-print(sequencia)
-#for g in grafo:
-#    print(g['adj'])
-#gerasequencia(inicio,"")
-#novo_grafo = deepcopy(grafo)
-#seq = geraCaminho(novo_grafo, inicio)
-#print(grafo)
-#print(saida)
-#print(entrada)
-#print(inicio)
+sequencia = remonta(composicao['d'],composicao['k'],cami, rotulo)
 
-
-#print(cami)
-#se = remonta(cami, composicao['d'])
-#print(se)
-
-
-
-
-"""
-
-for g in grafo:
-    print(g['ant'])
-"""
+arq = open('resposta.fasta', 'a')
+sequencia = '>k={}d={}\n'.format(composicao['k'],composicao['d']) + sequencia + '\n'
+arq.write(sequencia)
+arq.close()
+print("arquivo resposta.fasta gerado com a sequencia.")

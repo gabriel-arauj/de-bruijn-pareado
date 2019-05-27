@@ -1,9 +1,9 @@
 import sys
 
 # Abrindo arquivo .fasta
-def abrirArquivo():
+def abrirArquivo(i):
     try:
-        caminho = sys.argv[1]
+        caminho = sys.argv[i]
     except:
         print("Passe o arquivo como arguemento na chamada do programa!" )
         exit()
@@ -29,25 +29,13 @@ def abrirArquivo():
             lista[index]['sequencia'] += linha.replace("\n", "")
     return lista
 
-# Montando sequencias kdmers
-sequencias = abrirArquivo()
-for s in sequencias:
-    k = s['k']
-    d = s['d']
-    sequencia = s['sequencia']
-    kdmers = []
-    for i in range(len(sequencia)-d-k-k+1):
-        kdmers.append(sequencia[i:k+i] + "|" + sequencia[i+k+d: k+d+k+i])
-    kdmers = sorted(kdmers, key=lambda x:x[0:k])
-    arq = open('k{}d{}mer.txt'.format(k, d), 'w')
-    arq.write('[')
-    a = False
-    for i in kdmers:
-        if a:
-            arq.write(', ')
-        a =True
-        arq.write('\''+i.__str__()+'\'')
-    arq.write(']')
-    arq.close()
-    print("arquivo k{}d{}mer.txt gerado com as sequencia.".format(k, d))
+arq1 = abrirArquivo(1)
+arq2 = abrirArquivo(2)
+arq1 = arq1[0]['sequencia']
+arq2 = arq2[0]['sequencia']
 
+tam = len(arq1)
+""" for i in range(tam):
+    print(arq1[i],arq2[i], arq1[i]==arq2[i], ) """
+print(tam)
+print(arq1 == arq2)
