@@ -1,6 +1,7 @@
 import sys
 
 
+
 # Abrindo arquivo kdmer
 def abrirArquivo():
     try:
@@ -17,7 +18,7 @@ def abrirArquivo():
     k = int(k.split('k')[1])
     d = int(d.split("mer.txt")[0])
     x = f.read()
-    ls = x.strip('][').replace('\'', "").replace(" ", "").split(',')
+    ls = x.replace('[', "").replace(']', "").replace('\'', "").replace(" ", "").split(',')
     return {'k':k,'d':d,'sequencia':ls}
 
 def prefixo(i):
