@@ -16,9 +16,10 @@ def abrirArquivo():
         exit()
     k, d= caminho.split("d")
     k = int(k.split('k')[1])
-    d = int(d.split("mer.txt")[0])
+    d = int(d.split("mer")[0])
     x = f.read()
-    ls = x.replace('[', "").replace(']', "").replace('\'', "").replace(" ", "").split(',')
+    x = x.replace("","")
+    ls = x.replace('[', "").replace(']', "").replace("'", "").replace(" ", "").replace("\r", "").replace("\n", "").split(',')
     return {'k':k,'d':d,'sequencia':ls}
 
 def prefixo(i):
@@ -34,14 +35,13 @@ def sufixo(i):
     return (s1, s2)
 
 def geraAdjLista(composicao):
-    rotulo = {}
     grafo = {}
     saida = {}
     entrada = {}
     for x in composicao['sequencia']:
+        if(len(x)!=2001): print(x)
         pre = prefixo(x)
         suf = sufixo(x)
-        rotulo[pre] = x
         grafo[pre] = []
         saida[pre] = 0
         saida[suf] = 0
@@ -53,12 +53,12 @@ def geraAdjLista(composicao):
         grafo[pre].append(suf)
         saida[pre] += 1
         entrada[suf] += 1
-    return [grafo,saida,entrada, rotulo]
+    return [grafo,saida,entrada]
 
 def encontraInicio(entrada, saida):
-    mim = 0
+    mim = -1
     chave = list(entrada)[0]
-    for i in (entrada):
+    for i in list(saida):
         if entrada[i] - saida[i] <= mim:
             mim = entrada[i] - saida[i]
             chave = i
@@ -83,7 +83,7 @@ def acha_caminho(grafo, entrada, saida, chave):
                 chave = viz
     return caminho[::-1]
 
-def remonta( d, k, caminho, rotulo):
+def remonta( d, k, caminho):
     sequencia = ""
     for i in caminho[:-1]:
         ini = i[0]
@@ -99,12 +99,12 @@ def remonta( d, k, caminho, rotulo):
 
 
 composicao = abrirArquivo()
-grafo, saida, entrada, rotulo = geraAdjLista(composicao)
+grafo, saida, entrada = geraAdjLista(composicao)
 chave_inicio = encontraInicio(entrada, saida)
 cami = acha_caminho(grafo, entrada, saida, chave_inicio)
-sequencia = remonta(composicao['d'],composicao['k'],cami, rotulo)
+sequencia = remonta(composicao['d'],composicao['k'],cami)
 
-arq = open('resposta.fasta', 'a')
+arq = open('resposta.fasta', 'w')
 sequencia = '>k={}d={}\n'.format(composicao['k'],composicao['d']) + sequencia + '\n'
 arq.write(sequencia)
 arq.close()
