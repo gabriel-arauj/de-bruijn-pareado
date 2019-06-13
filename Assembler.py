@@ -56,11 +56,11 @@ def geraAdjLista(composicao):
     return [grafo,saida,entrada]
 
 def encontraInicio(entrada, saida):
-    mim = 999
+    min = 999
     chave = list(entrada)[0]
     for i in list(saida):
-        if entrada[i] - saida[i] <= mim:
-            mim = entrada[i] - saida[i]
+        if entrada[i] - saida[i] <= min:
+            min = entrada[i] - saida[i]
             chave = i
     return chave
 
