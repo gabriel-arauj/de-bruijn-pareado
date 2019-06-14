@@ -1,6 +1,5 @@
 import sys
-
-
+import time
 
 # Abrindo arquivo kdmer
 def abrirArquivo():
@@ -8,61 +7,61 @@ def abrirArquivo():
         caminho = sys.argv[1]
     except:
         print("Passe o arquivo como arguemento na chamada do programa!" )
+        input()
         exit()
     try:
         f = open(caminho, 'r')
     except:
         print("Arquivo não encontrado!!")
+        input()
         exit()
     k, d= caminho.split("d")
     k = int(k.split('k')[1])
     d = int(d.split("mer")[0])
     x = f.read()
-    x = x.replace("","")
-    ls = x.replace('[', "").replace(']', "").replace("'", "").replace(" ", "").replace("\r", "").replace("\n", "").split(',')
+    x = x.replace("[1]: compositionKD (1000,200) = ", "")
+    ls = x.replace('[', "").replace(']', "").replace('\'', "").replace(" ", "").replace("\n","").replace("\r", "").split(',')
     return {'k':k,'d':d,'sequencia':ls}
 
-def prefixo(i):
-    s1 , s2 = i.split('|')
-    s1 = s1[0:-1]
-    s2 = s2[0:-1]
-    return (s1, s2)
-
-def sufixo(i):
-    s1 , s2 = i.split('|')
-    s1 = s1[1:]
-    s2 = s2[1:]
-    return (s1, s2)
+def su_pre_fixo(i):
+    x1 , x2 = i.split('|')
+    s1 = x1[1:]
+    s2 = x2[1:]
+    suf = (s1, s2)
+    p1 = x1[0:-1]
+    p2 = x2[0:-1]
+    pre = (p1, p2)
+    return [pre, suf]
 
 def geraAdjLista(composicao):
     grafo = {}
     saida = {}
     entrada = {}
     for x in composicao['sequencia']:
-        if(len(x)!=2001): print(x)
-        pre = prefixo(x)
-        suf = sufixo(x)
+        pre , suf = su_pre_fixo(x)
         grafo[pre] = []
         saida[pre] = 0
         saida[suf] = 0
         entrada[suf] = 0
         entrada[pre] = 0
     for x in composicao['sequencia']:
-        pre = prefixo(x)
-        suf = sufixo(x)
+        pre , suf = su_pre_fixo(x)
         grafo[pre].append(suf)
         saida[pre] += 1
         entrada[suf] += 1
     return [grafo,saida,entrada]
 
 def encontraInicio(entrada, saida):
-    min = 999
+    mim = 99
     chave = list(entrada)[0]
+    lista = []
     for i in list(saida):
-        if entrada[i] - saida[i] <= min:
-            min = entrada[i] - saida[i]
+        if(entrada[i] == 0):
+            lista.append(i)
+        if entrada[i] - saida[i] < mim:
+            mim = entrada[i] - saida[i]
             chave = i
-    return chave
+    return [chave, lista]
 
 def acha_caminho(grafo, entrada, saida, chave):
     caminho = []
@@ -83,7 +82,7 @@ def acha_caminho(grafo, entrada, saida, chave):
                 chave = viz
     return caminho[::-1]
 
-def remonta( d, k, caminho):
+def remonta(d, k, caminho):
     sequencia = ""
     for i in caminho[:-1]:
         ini = i[0]
@@ -94,18 +93,27 @@ def remonta( d, k, caminho):
     tam = len(caminho)
     for i in range(d + 1):
         sequencia += caminho[tam-d + i -4][1][1]
-        #print( caminho[tam-d + i -4][1][1])
     return sequencia + caminho[-2][1][0] + caminho[-1][1]
 
-
+t1 = time.time()
 composicao = abrirArquivo()
+print("abrir: ok - ", time.time() - t1,"---" , time.ctime())
+t1 = time.time()
 grafo, saida, entrada = geraAdjLista(composicao)
-chave_inicio = encontraInicio(entrada, saida)
+d= composicao['d']
+k = composicao['k']
+print("montar grafo: ok - ", time.time() - t1,"---" , time.ctime())
+chave_inicio, lista = encontraInicio(entrada, saida)
+t1 = time.time()
 cami = acha_caminho(grafo, entrada, saida, chave_inicio)
-sequencia = remonta(composicao['d'],composicao['k'],cami)
-
+del grafo
+del entrada
+del saida
+print("caminho euleriano: ok - ", time.time() - t1,"---" , time.ctime())
+sequencia = remonta(d,k,cami)
 arq = open('resposta.fasta', 'w')
-sequencia = '>k={}d={}\n'.format(composicao['k'],composicao['d']) + sequencia + '\n'
-arq.write(sequencia)
+sequencia = '>k={}d={}\n'.format(k,d) + sequencia + '\n'
+arq.write(sequencia.__str__())
 arq.close()
 print("arquivo resposta.fasta gerado com a sequencia.")
+input()
