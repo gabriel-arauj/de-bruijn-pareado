@@ -102,6 +102,7 @@ t1 = time.time()
 grafo, saida, entrada = geraAdjLista(composicao)
 d= composicao['d']
 k = composicao['k']
+del composicao
 print("montar grafo: ok - ", time.time() - t1,"---" , time.ctime())
 chave_inicio, lista = encontraInicio(entrada, saida)
 t1 = time.time()
